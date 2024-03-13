@@ -48,15 +48,3 @@ jobs:
     - name: Run test
       run: docker-compose run addressbook npm test
       working-directory: src
-
-    - name: Deploy Staging using ansible
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.STAGING_SERVER }}
-        username: ${{ secrets.STAGING_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /var/www/addressbook
-          git pull
-          docker-compose down
-          docker-compose up -d
