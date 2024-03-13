@@ -1,0 +1,32 @@
+# docker-compose.yml
+
+version: "3.9"
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: 
+      - '5432:5432'
+    
+  addressbook:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: "npm start"
+    volumes: 
+        - /opt/app/node_modules
+        - ./src:/opt/app
+    environment:
+      DB_SCHEMA: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+    depends_on:
+      - postgres
+    ports:
+      - '3000:3000'
+        
+volumes:
+  addressbook-db:
