@@ -49,8 +49,18 @@ jobs:
       run: docker-compose run addressbook npm test
       working-directory: src
 
-    - name: Deploy to Staging
-      run: |
-        ansible-playbook deploy.yml -e env=staging
-      working-directory: ansible
-
+    - name: Run playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        # Required, playbook filepath
+        playbook: deploy.yml
+        # Optional, directory where playbooks live
+        directory: ./ansible
+        # Optional, ansible configuration file content (ansible.cfg)
+        configuration: |
+          [defaults]
+          callbacks_enabled = ansible.posix.profile_tasks, ansible.posix.timer
+          stdout_callback = yaml
+          nocows = false
+        # Optional, SSH private key
+        key: ${{secrets.SSH_PRIVATE_KEY}}
