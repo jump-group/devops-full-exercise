@@ -56,12 +56,20 @@ jobs:
         playbook: deploy.yml
         # Optional, directory where playbooks live
         directory: ./ansible
+        inventory: |
+          [staging]
+          165.227.139.136
         # Optional, ansible configuration file content (ansible.cfg)
         configuration: |
           [defaults]
-          callbacks_enabled = ansible.posix.profile_tasks, ansible.posix.timer
-          stdout_callback = yaml
-          nocows = false
+          host_key_checking = True
+          log_path = /var/log/ansible.log
+          force_color = True
+          inventory = hosts
+
+          [ssh_connection]
+          ssh_args = -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=60s -o HostKeyAlgorithms=ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa
+          retries = 1
         # Optional, SSH private key
         key: ${{secrets.SSH_PRIVATE_KEY}}
         # Optional, additional flags to pass to ansible-playbook
