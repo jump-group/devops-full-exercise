@@ -1,0 +1,7 @@
+---
+http_host: "ansible.sitointest.it"
+http_conf: "ansible.sitointest.it.conf"
+http_port: 80
+disable_default: true
+project_repo: "git@github.com:jump-group/devops-full-exercise.git"
+project_branch: "development"

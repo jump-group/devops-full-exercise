@@ -1,0 +1,11 @@
+all:
+  hosts:
+    staging:
+      ansible_host: 165.227.139.136
+  children:
+    staging:
+      hosts:
+        staging:
+    web:
+      hosts:
+        staging:

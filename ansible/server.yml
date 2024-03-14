@@ -1,0 +1,97 @@
+---
+
+- name: Provision Server - Add Users
+  hosts: web:&{{ env }}
+  become: true
+  remote_user: "{{ admin_user }}"
+  vars_files: 
+    - vars/users.yml
+    - vars/default.yml
+  roles:
+     - { role: users, tags: ['users', always] }
+
+
+- name: Provision Server
+  hosts: web:&{{ env }}
+  become: true
+  remote_user: "{{ admin_user }}"
+  vars_files: 
+    - vars/users.yml
+    - vars/default.yml
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+    
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Install docker-compose
+      pip:
+        name: docker-compose
+        state: present
+
+    - name: Create Web Directory
+      file:
+        path: /var/www/
+        state: directory
+        owner: "{{ web_user }}"
+        group: "{{ web_group }}"
+
+    - name: Create Document root
+      file:
+        path: /var/www/{{ http_host}}
+        state: directory
+        owner: "{{ web_user }}"
+        group: "{{ web_group }}"
+
+    - name: Create docker group
+      group:
+        name: docker
+        state: present
+
+    - name: Add user to docker group
+      user:
+        name: "{{ web_user }}"
+        groups: docker
+        append: yes
+
+    # - name: Restart shell for group membership changes to take effect
+    #   command: "su -s {{ web }}"
+    #   become: yes
+    #   become_user: "{{ web_user }}"
+
+
+    

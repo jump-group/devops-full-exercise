@@ -48,3 +48,9 @@ jobs:
     - name: Run test
       run: docker-compose run addressbook npm test
       working-directory: src
+
+    - name: Deploy to Staging
+      run: |
+        ansible-playbook deploy.yml -e env=staging
+      working-directory: ansible
+
